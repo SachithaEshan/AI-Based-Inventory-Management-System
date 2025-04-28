@@ -51,8 +51,8 @@ AI-Based-Inventory-Management-System/
 - Node.js (v14 or higher)
 - npm or yarn package manager
 - Git
-
-## Installation
+```
+## 🚀 Getting Started
 
 1. Clone the repository:
 ```bash
@@ -99,7 +99,7 @@ The application will be available at:
 - Use `npm run dev` in both directories for development
 - Use `npm run build` to create production builds
 
-## Testing
+## 🧪 Testing
 
 Run tests for the server:
 ```bash
@@ -107,7 +107,7 @@ cd server
 npm test
 ```
 
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -115,13 +115,14 @@ npm test
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License
+## 📜 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 📬 Contact
 
-✉️ Email: eshanssg@gmail.com
-Project Link: AI-Based-Inventory-Management-System [https://github.com/SachithaEshan/AI-Based-Inventory-Management-System]
+- ✉️ Email: eshanssg@gmail.com  
 
-## Developed with ❤️ for my Final Year Project — BSc (Hons) Computer Science.
+- Project Link: [AI-Based-Inventory-Management-System](https://github.com/SachithaEshan/AI-Based-Inventory-Management-System)
+
+### Developed with ❤️ by [Sachitha Eshan](https://github.com/SachithaEshan) for my Final Year Project — BSc (Hons) Computer Science.
