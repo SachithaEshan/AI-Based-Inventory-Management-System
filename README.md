@@ -9,6 +9,7 @@ This system helps businesses efficiently manage their stock, predict inventory n
 
 ✅ Real-time inventory tracking and updates  
 ✅ AI-powered demand forecasting 📈  
+✅ Anomaly Detection 
 ✅ Responsive and user-friendly dashboard 🖥️  
 ✅ Secure authentication system 🔒  
 ✅ Real-time notifications and low-stock alerts 🚨  
