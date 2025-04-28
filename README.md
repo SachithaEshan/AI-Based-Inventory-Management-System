@@ -119,7 +119,9 @@ npm test
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Contact
+## 📬 Contact
 
-Sachitha Eshan Gamage - eshanssg@gmail.com
-Project Link: https://github.com/SachithaEshan/AI-Based-Inventory-Management-System
+✉️ Email: eshanssg@gmail.com
+Project Link: AI-Based-Inventory-Management-System [https://github.com/SachithaEshan/AI-Based-Inventory-Management-System]
+
+## Developed with ❤️ for my Final Year Project — BSc (Hons) Computer Science.
