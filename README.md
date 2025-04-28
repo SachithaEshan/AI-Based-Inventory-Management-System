@@ -1,32 +1,50 @@
 # 📦 AI-Based Inventory Management System
 
-Welcome to the Final Year Project — A modern, full-stack inventory management system powered by AI and real-time updates. This system helps businesses efficiently manage their inventory, predict stock levels, and make data-driven decisions.
+Welcome to the Final Year Project — a **modern, full-stack AI-powered inventory management system**.  
+This system helps businesses efficiently manage their stock, predict inventory needs, and make **data-driven decisions** in real-time! 🌟
 
-## Features
+---
 
-- Real-time inventory tracking and updates
-- AI-powered stock level predictions
-- User-friendly dashboard interface
-- Secure authentication system
-- Real-time notifications and alerts
-- Data visualization and analytics
-- CSV import/export functionality
-- Responsive design for all devices
+## ✨ Features
 
-## Tech Stack
+✅ Real-time inventory tracking and updates  
+✅ AI-powered demand forecasting 📈  
+✅ Responsive and user-friendly dashboard 🖥️  
+✅ Secure authentication system 🔒  
+✅ Real-time notifications and low-stock alerts 🚨  
+✅ Data visualization and analytics 📊  
+✅ CSV import/export functionality 📑  
+✅ Clean and responsive design for all devices 📱💻
 
-### Frontend
-- React with TypeScript
-- Vite for build tooling
-- Socket.IO for real-time updates
-- Modern UI components and styling
+---
 
-### Backend
-- Node.js with TypeScript
-- Express.js framework
-- Socket.IO for real-time communication
-- Jest for testing
-- ESLint and Prettier for code quality
+## 🛠 Tech Stack
+
+### 🖥️ Frontend
+- ⚛️ React (with TypeScript)
+- ⚡ Vite (super fast builds)
+- 🎨 Ant Design (UI library)
+- 🧩 Socket.IO (for real-time updates)
+- 📦 Zustand / Redux Toolkit (state management)
+
+### 🖥️ Backend
+- 🔥 Node.js (with TypeScript)
+- 🚀 Express.js (server framework)
+- 🧠 TensorFlow.js (AI predictions)
+- 📡 Socket.IO (real-time communication)
+- 🛡️ JWT Authentication
+- 🧪 Jest (backend testing)
+
+---
+
+## 📦 Project Structure
+
+```bash
+AI-Based-Inventory-Management-System/
+├── client/        # Frontend - React + Vite + TypeScript
+├── server/        # Backend - Node.js + Express + TypeScript
+├── README.md      # Project Documentation
+
 
 ## Prerequisites
 
@@ -38,7 +56,7 @@ Welcome to the Final Year Project — A modern, full-stack inventory management 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/sachithaeshan/ai-based-inventory-management-system.git
+git clone https://github.com/SachithaEshan/AI-Based-Inventory-Management-System.git
 cd ai-based-inventory-management-system
 ```
 
@@ -104,4 +122,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Contact
 
 Sachitha Eshan Gamage - eshanssg@gmail.com
-Project Link: https://github.com/yourusername/ai-based-inventory-management-system
+Project Link: https://github.com/SachithaEshan/AI-Based-Inventory-Management-System
