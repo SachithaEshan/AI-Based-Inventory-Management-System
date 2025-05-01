@@ -1,4 +1,4 @@
-import { DeleteFilled, EditFilled } from '@ant-design/icons';
+import { DeleteFilled, EditFilled, HistoryOutlined } from '@ant-design/icons';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Flex, Modal, Pagination, Table } from 'antd';
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { useDeleteSaleMutation, useGetAllSaleQuery } from '../../redux/features/
 import { IProduct } from '../../types/product.types';
 import { ITableSale } from '../../types/sale.type';
 import formatDate from '../../utils/formatDate';
+import { NavLink } from 'react-router-dom';
 
 const SaleManagementPage = () => {
   const [query, setQuery] = useState({
@@ -91,12 +92,11 @@ const SaleManagementPage = () => {
 
   return (
     <>
-      <Flex justify='end' style={{ margin: '5px', gap: 4 }}>
-        {/* <DatePicker
-          onChange={onDateChange}
-          placeholder='Search by Selling date...'
-          style={{ minWidth: '250px' }}
-        /> */}
+    
+      <Flex justify='space-between' style={{ margin: '5px' }}>
+        <Button type="primary" icon={<HistoryOutlined />} >
+          <NavLink to='/sales-history' style={{ color: 'inherit' }}>View Sale History</NavLink>
+        </Button>
         <SearchInput setQuery={setQuery} placeholder='Search Sold Products...' />
       </Flex>
       <Table

@@ -80,6 +80,8 @@
 
 // export default LoginPage;
 
+//2nd way
+
 import { Button, Flex } from 'antd';
 import { FieldValues, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -205,3 +207,6 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+
+
