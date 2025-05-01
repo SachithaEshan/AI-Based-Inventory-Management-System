@@ -13,8 +13,8 @@ forecastRoutes.use(verifyAuth);
 forecastRoutes.post('/demo', (req, res) => {
   const scriptPath = path.join(__dirname, 'forecast.py');
   
-  // Run Python script in demo mode
-  exec(`python3 ${scriptPath} demo`, (error, stdout, stderr) => {
+  // Run Python script in demo mode with properly escaped path
+  exec(`python3 "${scriptPath}" demo`, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error: ${error.message}`);
       console.error(`Stderr: ${stderr}`);
@@ -47,8 +47,8 @@ forecastRoutes.post('/:productId', (req, res) => {
   const { productId } = req.params;
   const scriptPath = path.join(__dirname, 'forecast.py');
 
-  // Run Python script with product ID
-  exec(`python3 ${scriptPath} ${productId}`, (error, stdout, stderr) => {
+  // Run Python script with product ID and properly escaped path
+  exec(`python3 "${scriptPath}" ${productId}`, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error: ${error.message}`);
       console.error(`Stderr: ${stderr}`);
