@@ -14,7 +14,7 @@ const anomalyAlertSchema = new Schema<IAnomalyAlert>({
   type: {
     type: String,
     required: true,
-    enum: ['Abnormal Demand', 'Unusual Stock Drop']
+    enum: ['Abnormal Demand', 'Unusual Stock Drop', 'ARIMA Anomaly']
   },
   productId: {
     type: String,

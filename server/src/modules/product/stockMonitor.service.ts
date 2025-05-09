@@ -89,19 +89,19 @@ export const checkStockLevels = async (userId: string) => {
 };
 
 //Schedule stock level check every hour
-export const scheduleStockCheck = (userId: string) => {
-  // Run immediately when initialized
-  checkStockLevels(userId).catch(console.error);
+// export const scheduleStockCheck = (userId: string) => {
+//   // Run immediately when initialized
+//   checkStockLevels(userId).catch(console.error);
   
-  // Then schedule regular checks
-  cron.schedule('*/5 * * * *', async () => {
-    try {
-      await checkStockLevels(userId);
-    } catch (error) {
-      console.error('Error in scheduled stock check:', error);
-    }
-  });
-};
+//   // Then schedule regular checks
+//   cron.schedule('*/5 * * * *', async () => {
+//     try {
+//       await checkStockLevels(userId);
+//     } catch (error) {
+//       console.error('Error in scheduled stock check:', error);
+//     }
+//   });
+// };
 
 // Schedule stock level check every 10 minutes
 // export const scheduleStockCheck = (userId: string) => {
@@ -117,16 +117,16 @@ export const scheduleStockCheck = (userId: string) => {
 //     }
 //   });
 // };
-// export const scheduleStockCheck = (userId: string) => {
-//   cron.schedule('*/3 * * * *', async () => {
-//     try {
-//       console.log('Running scheduled stock check...');
-//       const reorderRequests = await checkStockLevels(userId);
-//       if (reorderRequests.length > 0) {
-//         console.log('Generated reorder requests:', reorderRequests);
-//       }
-//     } catch (error) {
-//       console.error('Error in scheduled stock check:', error);
-//     }
-//   });
-// };
+export const scheduleStockCheck = (userId: string) => {
+  cron.schedule('*/2 * * * *', async () => {
+    try {
+      console.log('Running scheduled stock check...');
+      const reorderRequests = await checkStockLevels(userId);
+      if (reorderRequests.length > 0) {
+        console.log('Generated reorder requests:', reorderRequests);
+      }
+    } catch (error) {
+      console.error('Error in scheduled stock check:', error);
+    }
+  });
+};
