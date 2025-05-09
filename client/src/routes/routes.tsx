@@ -18,6 +18,7 @@ import ForecastPage from '../pages/ForecastPage';
 import PendingOrdersPage from '../pages/managements/PendingOrdersPage';
 import NotificationsPage from '../pages/managements/NotificationsPage';
 import AnomalyAlertsPage from '../pages/AnomalyAlertsPage';
+import StockOptimizationPage from '../pages/StockOptimizationPage';
 
 export const router = createBrowserRouter([
   {
@@ -133,6 +134,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectRoute>
             <AnomalyAlertsPage />
+          </ProtectRoute>
+        ),
+      },
+      {
+        path: 'stock-optimization/:productId?',
+        element: (
+          <ProtectRoute>
+            <StockOptimizationPage />
           </ProtectRoute>
         ),
       },

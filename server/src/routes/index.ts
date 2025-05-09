@@ -10,6 +10,7 @@ import forecastRoutes from '../forecast/forecast';
 import orderRoutes from '../modules/order/order.routes';
 import notificationRoutes from '../modules/notification/notification.routes';
 import anomalyRoutes from '../modules/anomaly/anomaly.routes';
+import stockOptimizationRoutes from './stockOptimization';
 
 const rootRouter = Router();
 
@@ -24,5 +25,6 @@ rootRouter.use('/orders', orderRoutes);
 rootRouter.use('/forecast', forecastRoutes);
 rootRouter.use('/notifications', notificationRoutes);
 rootRouter.use('/anomaly', anomalyRoutes);
+rootRouter.use('/stock-optimization', stockOptimizationRoutes);
 
 export default rootRouter;
