@@ -13,6 +13,7 @@ router.get('/', verifyAuth, async (req, res) => {
       .limit(100);
     res.json(alerts);
   } catch (error) {
+    console.error('Error fetching anomaly alerts:', error);
     res.status(500).json({ message: 'Error fetching anomaly alerts' });
   }
 });
@@ -24,7 +25,11 @@ router.post('/detect', verifyAuth, async (req, res) => {
     await anomalyService.detectAnomalies();
     res.json({ message: 'Anomaly detection completed successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error during anomaly detection' });
+    console.error('Error during anomaly detection:', error);
+    res.status(500).json({ 
+      message: 'Error during anomaly detection',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
