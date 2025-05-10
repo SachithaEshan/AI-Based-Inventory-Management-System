@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 import json
 import traceback
 from bson import ObjectId
+from statsmodels.tsa.stattools import adfuller
+from typing import Dict, List, Union, Any
 
 def get_mongodb_connection():
     try:
@@ -60,7 +62,31 @@ def get_inventory_data(product_id=None):
         if client:
             client.close()
 
-def run_arima_forecast(data):
+def is_stationary(data: pd.Series, threshold: float = 0.05) -> bool:
+    """Test if the time series is stationary using Augmented Dickey-Fuller test."""
+    result = adfuller(data)
+    return result[1] < threshold
+
+def find_best_arima_order(data: pd.Series, max_p: int = 5, max_d: int = 2, max_q: int = 5) -> tuple:
+    """Find the best ARIMA order using AIC."""
+    best_aic = float('inf')
+    best_order = None
+    
+    for p in range(max_p + 1):
+        for d in range(max_d + 1):
+            for q in range(max_q + 1):
+                try:
+                    model = ARIMA(data, order=(p, d, q))
+                    results = model.fit()
+                    if results.aic < best_aic:
+                        best_aic = results.aic
+                        best_order = (p, d, q)
+                except:
+                    continue
+    
+    return best_order if best_order else (1, 1, 1)
+
+def run_arima_forecast(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     try:
         # Convert data to DataFrame
         df = pd.DataFrame(data)
@@ -74,13 +100,26 @@ def run_arima_forecast(data):
         if len(df) < 10:
             return {"error": "Not enough data points for ARIMA forecast. Minimum 10 points required."}
         
+        # Check for stationarity and difference if necessary
+        if not is_stationary(df['quantity']):
+            df['quantity'] = df['quantity'].diff().dropna()
+        
+        # Find best ARIMA order
+        best_order = find_best_arima_order(df['quantity'])
+        print(f"Best ARIMA order: {best_order}")
+        
         # Fit ARIMA model
-        model = ARIMA(df['quantity'], order=(5,1,0))  # ARIMA(5,1,0) - can be tuned based on data
+        model = ARIMA(df['quantity'], order=best_order)
         model_fit = model.fit()
         
         # Forecast next 30 days
         forecast_steps = 30
         forecast = model_fit.forecast(steps=forecast_steps)
+        
+        # Calculate model diagnostics
+        residuals = model_fit.resid
+        mae = np.mean(np.abs(residuals))
+        rmse = np.sqrt(np.mean(residuals**2))
         
         # Calculate optimal stock levels
         mean_demand = df['quantity'].mean()
@@ -101,7 +140,7 @@ def run_arima_forecast(data):
         annual_demand = mean_demand * 365
         eoq = np.sqrt((2 * annual_demand * ordering_cost) / holding_cost)
         
-        # Prepare results
+        # Prepare forecast results
         forecast_dates = pd.date_range(start=df.index[-1] + timedelta(days=1), periods=forecast_steps)
         forecast_df = pd.DataFrame({
             'date': forecast_dates,
@@ -110,26 +149,35 @@ def run_arima_forecast(data):
         
         # Convert datetime objects to ISO format strings for JSON serialization
         forecast_records = forecast_df.to_dict(orient='records')
-        for record in forecast_records:
-            record['date'] = record['date'].isoformat()
         
-        optimization_results = {
-            'forecast': forecast_records,
-            'optimal_levels': {
-                'safety_stock': round(safety_stock, 2),
-                'reorder_point': round(reorder_point, 2),
-                'economic_order_quantity': round(eoq, 2),
-                'mean_demand': round(mean_demand, 2),
-                'std_demand': round(std_demand, 2)
-            }
+        # Prepare model diagnostics
+        diagnostics = {
+            'mae': float(mae),
+            'rmse': float(rmse),
+            'aic': float(model_fit.aic),
+            'bic': float(model_fit.bic),
+            'residuals_mean': float(residuals.mean()),
+            'residuals_std': float(residuals.std())
         }
         
-        return optimization_results
+        # Prepare optimal levels
+        optimal_levels = {
+            'mean_demand': float(mean_demand),
+            'std_demand': float(std_demand),
+            'safety_stock': float(safety_stock),
+            'reorder_point': float(reorder_point),
+            'economic_order_quantity': float(eoq)
+        }
+        
+        return {
+            'forecast': forecast_records,
+            'model_diagnostics': diagnostics,
+            'optimal_levels': optimal_levels
+        }
         
     except Exception as e:
-        error_msg = f"Error in ARIMA forecast: {str(e)}\n{traceback.format_exc()}"
-        print(error_msg, file=sys.stderr)
-        return {"error": error_msg}
+        print(f"Error in ARIMA forecast: {str(e)}", file=sys.stderr)
+        return {"error": str(e)}
 
 def optimize_stock_levels(product_id=None, is_demo=False):
     try:
@@ -158,19 +206,14 @@ def optimize_stock_levels(product_id=None, is_demo=False):
         return {"error": error_msg}
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print(json.dumps({"error": "No data provided"}))
+        sys.exit(1)
+        
     try:
-        if len(sys.argv) > 1:
-            if sys.argv[1] == 'demo':
-                result = optimize_stock_levels(is_demo=True)
-            elif sys.argv[1] == 'forecast':
-                # Parse the sales data from the second argument
-                sales_data = json.loads(sys.argv[2])
-                result = run_arima_forecast(sales_data)
-            else:
-                result = optimize_stock_levels(product_id=sys.argv[1])
-            print(json.dumps(result))
-        else:
-            print(json.dumps({"error": "Product ID, forecast mode, or demo mode required"}))
+        data = json.loads(sys.argv[1])
+        result = run_arima_forecast(data)
+        print(json.dumps(result))
     except Exception as e:
-        error_msg = f"Error in main: {str(e)}\n{traceback.format_exc()}"
-        print(json.dumps({"error": error_msg})) 
+        print(json.dumps({"error": str(e)}))
+        sys.exit(1) 
