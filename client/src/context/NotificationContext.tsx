@@ -25,11 +25,12 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [socket, setSocket] = useState<typeof Socket | null>(null);
   const token = useAppSelector(getCurrentToken);
   const user = useAppSelector(getCurrentUser);
-  const { data: dbNotifications, refetch: refetchNotifications } = useGetNotificationsQuery(undefined);
+  const { data: dbNotifications, refetch: refetchNotifications } = useGetNotificationsQuery(undefined, {
+    skip: !token || !user?._id // Skip the query if we don't have auth data
+  });
 
   useEffect(() => {
     if (!token || !user?._id) {
-      console.log('No authentication data found');
       return;
     }
 

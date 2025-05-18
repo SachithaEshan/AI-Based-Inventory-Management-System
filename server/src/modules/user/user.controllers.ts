@@ -74,6 +74,64 @@ class UserControllers {
       data: result
     });
   });
+
+  // Admin: Get all users
+  getAllUsers = asyncHandler(async (req, res) => {
+    console.log('getAllUsers called with query:', req.query);
+    console.log('User making request:', req.user);
+    
+    const result = await this.services.getAllUsers(req.query);
+    console.log('getAllUsers result:', result);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Users retrieved successfully!',
+      data: result
+    });
+  });
+
+  // Admin: Update user role
+  updateUserRole = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const { role } = req.body;
+    
+    const result = await this.services.updateUserRole(userId, role);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'User role updated successfully!',
+      data: result
+    });
+  });
+
+  // Admin: Update user status
+  updateUserStatus = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const { status } = req.body;
+    
+    const result = await this.services.updateUserStatus(userId, status);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'User status updated successfully!',
+      data: result
+    });
+  });
+
+  // Create admin user (protected route)
+  createAdmin = asyncHandler(async (req, res) => {
+    const result = await this.services.createAdmin(req.body);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      message: 'Admin user created successfully!',
+      data: result
+    });
+  });
 }
 
 const userControllers = new UserControllers();

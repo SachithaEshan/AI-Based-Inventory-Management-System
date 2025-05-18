@@ -61,6 +61,16 @@ class SellerControllers {
    * update sale
    */
   update = asyncHandler(async (req, res) => {
+    // First check if seller exists and user owns it
+    const existingSeller = await this.services.read(req.params.id, req.user._id);
+    if (!existingSeller) {
+      return res.status(404).json({
+        statusCode: 404,
+        message: 'Seller not found or you are not authorized to update this seller',
+        error: 'NotFound'
+      });
+    }
+
     const result = await this.services.update(req.params.id, req.body);
 
     sendResponse(res, {

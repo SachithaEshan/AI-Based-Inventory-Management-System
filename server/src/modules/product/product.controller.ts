@@ -197,10 +197,21 @@ export const getTotalProduct = async (req: Request, res: Response) => {
 export const readAll = async (req: Request, res: Response) => {
   try {
     console.log('Starting to fetch products...');
-    const { name, category, brand, limit = 10 } = req.query;
-    console.log('Query parameters:', { name, category, brand, limit });
+    const { name, category, brand, limit = 10, minPrice, maxPrice } = req.query;
+    console.log('Raw query parameters:', req.query);
+    console.log('Parsed price parameters:', { minPrice, maxPrice });
 
-    const query: any = {};
+    if (!req.user?._id) {
+      return res.status(401).json({
+        statusCode: 401,
+        message: 'User not authenticated',
+        error: 'Unauthorized'
+      });
+    }
+
+    const query: any = {
+      user: new Types.ObjectId(req.user._id)
+    };
 
     if (name) {
       query.name = { $regex: name, $options: 'i' };
@@ -230,7 +241,21 @@ export const readAll = async (req: Request, res: Response) => {
       }
     }
 
-    console.log('MongoDB query:', JSON.stringify(query, null, 2));
+    // Handle price range filtering
+    if (minPrice !== undefined && minPrice !== '') {
+      const minPriceNum = parseFloat(minPrice as string);
+      if (!isNaN(minPriceNum)) {
+        query.price = { ...query.price, $gte: minPriceNum };
+      }
+    }
+    if (maxPrice !== undefined && maxPrice !== '') {
+      const maxPriceNum = parseFloat(maxPrice as string);
+      if (!isNaN(maxPriceNum)) {
+        query.price = { ...query.price, $lte: maxPriceNum };
+      }
+    }
+
+    console.log('Final MongoDB query:', JSON.stringify(query, null, 2));
 
     try {
       const products = await Product.find(query)
@@ -251,7 +276,8 @@ export const readAll = async (req: Request, res: Response) => {
           model: 'Seller'
         });
 
-      console.log('Products found:', products.length);
+      console.log('Filtered products count:', products.length);
+      console.log('Sample of filtered products:', products.slice(0, 3).map(p => ({ name: p.name, price: p.price })));
 
       res.json({
         statusCode: 200,

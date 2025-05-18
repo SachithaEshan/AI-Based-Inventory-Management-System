@@ -49,11 +49,16 @@ vi.mock('../api/productApi', () => ({
 describe('ProductManagePage', () => {
   const store = configureStore({
     reducer: {
-      auth: authReducer
+      auth: authReducer as any
     },
     preloadedState: {
       auth: {
         user: {
+          name: 'Test User',
+          role: 'admin',
+          status: 'active',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
           _id: 'test-id',
           email: 'test@example.com',
           exp: Math.floor(Date.now() / 1000) + 3600,

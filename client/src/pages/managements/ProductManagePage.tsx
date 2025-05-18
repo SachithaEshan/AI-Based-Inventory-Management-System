@@ -21,18 +21,28 @@ import { WarningOutlined } from '@ant-design/icons';
 import LowStockWarning from '../../components/LowStockWarning';
 
 const ProductManagePage = () => {
-  const [current, setCurrent] = useState(1);
   const [query, setQuery] = useState({
     name: '',
     category: '',
     brand: '',
     limit: 10,
+    page: 1,
+    minPrice: 0,
+    maxPrice: 20000,
   });
 
-  const { data: products, isFetching } = useGetAllProductsQuery(query);
+  const { data: products, isFetching } = useGetAllProductsQuery({
+    ...query,
+    minPrice: query.minPrice.toString(),
+    maxPrice: query.maxPrice.toString()
+  });
 
   const onChange: PaginationProps['onChange'] = (page) => {
-    setCurrent(page);
+    setQuery(prev => ({ ...prev, page }));
+  };
+
+  const handleFilterChange = (newQuery: Partial<typeof query>) => {
+    setQuery(prev => ({ ...prev, ...newQuery, page: 1 }));
   };
 
   const tableData = products?.data?.map((product: IProduct) => ({
@@ -122,7 +132,7 @@ const ProductManagePage = () => {
 
   return (
     <>
-      <ProductManagementFilter query={query} setQuery={setQuery} />
+      <ProductManagementFilter query={query} setQuery={handleFilterChange} />
       <Table
         size='small'
         loading={isFetching}
@@ -132,10 +142,11 @@ const ProductManagePage = () => {
       />
       <Flex justify='center' style={{ marginTop: '1rem' }}>
         <Pagination
-          current={current}
+          current={query.page}
           onChange={onChange}
-          defaultPageSize={query.limit}
+          pageSize={query.limit}
           total={products?.meta?.total}
+          showSizeChanger={false}
         />
       </Flex>
     </>

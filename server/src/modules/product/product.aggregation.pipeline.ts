@@ -38,7 +38,7 @@ const matchStagePipeline = (query: Record<string, unknown>, userId: string) => {
   return [
     {
       $match: {
-        $and: [...fieldQuery]
+        $and: fieldQuery
       }
     }
   ];

@@ -65,6 +65,10 @@ class SellerServices extends BaseServices<any> {
     await this._isExists(id);
     return this.model.findOne({ user: new Types.ObjectId(userId), _id: id });
   }
+  // update seller
+  async update(id: string, payload: any, userId?: string) {
+    return super.update(id, payload, userId);
+  }
 }
 
 const sellerServices = new SellerServices(Seller, 'seller');

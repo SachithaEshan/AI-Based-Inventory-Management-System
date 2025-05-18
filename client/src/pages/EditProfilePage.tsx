@@ -269,7 +269,7 @@ const EditProfilePage = () => {
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />
-            <label
+            {/* <label
               htmlFor="avatar"
               style={{
                 backgroundColor: '#164863',
@@ -286,7 +286,7 @@ const EditProfilePage = () => {
             >
               <UploadOutlined />
               Change Picture
-            </label>
+            </label> */}
           </div>
         </Col>
 
