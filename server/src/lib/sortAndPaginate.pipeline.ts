@@ -16,6 +16,8 @@ const sortAndPaginatePipeline = (query: Record<string, unknown>) => {
     sortOrder = query.sortOrder === 'desc' ? -1 : 1;
   }
 
+  const skip = (page - 1) * limit;
+
   return [
     {
       $sort: {
@@ -23,7 +25,7 @@ const sortAndPaginatePipeline = (query: Record<string, unknown>) => {
       }
     },
     {
-      $skip: limit * (page - 1)
+      $skip: skip
     },
     {
       $limit: limit

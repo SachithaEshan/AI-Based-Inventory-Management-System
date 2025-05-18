@@ -4,7 +4,7 @@ import { logoutUser } from "../services/authSlice";
 import { RootState } from "../store";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: config.baseUrl,
+  baseUrl: 'http://localhost:8000/api/v1',
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token
 
@@ -26,7 +26,6 @@ const customBaseQuery: BaseQueryFn<FetchArgs, BaseQueryApi, DefinitionType> = as
 
   return result
 }
-
 
 export const baseApi = createApi({
   reducerPath: 'baseApi',

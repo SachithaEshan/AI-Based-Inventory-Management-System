@@ -11,9 +11,10 @@ interface SearchInputProps {
     }>
   >;
   placeholder?: string;
+  style?: React.CSSProperties;
 }
 
-const SearchInput = ({ setQuery, placeholder = 'Search…' }: SearchInputProps) => {
+const SearchInput = ({ setQuery, placeholder = 'Search…', style }: SearchInputProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -30,7 +31,7 @@ const SearchInput = ({ setQuery, placeholder = 'Search…' }: SearchInputProps) 
     <div>
       <Input
         size='large'
-        style={{ minWidth: '300px' }}
+        style={{ minWidth: '300px', ...style }}
         placeholder={placeholder}
         onChange={(e) => setSearchTerm(e.target.value)}
         prefix={<SearchOutlined />}

@@ -56,7 +56,7 @@ class ProductControllers {
         page,
         limit,
         total: result?.totalCount[0]?.total || 0,
-        totalPage: Math.ceil(result?.totalCount[0]?.total / page)
+        totalPage: Math.ceil((result?.totalCount[0]?.total || 0) / limit)
       },
       data: result.data
     });

@@ -1,30 +1,22 @@
-import { Button, Flex, Input } from 'antd';
+import { Button, Flex, Input, Form, Typography } from 'antd';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useChangePasswordMutation } from '../redux/features/authApi';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
+const { Title } = Typography;
+
 const ChangePasswordPage = () => {
   const [changePassword] = useChangePasswordMutation();
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [form] = Form.useForm();
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      toast.error('All fields are required');
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      toast.error('New password must have 6 characters');
-      return;
-    }
+  const handleSubmit = async (values: any) => {
+    const { oldPassword, newPassword, confirmPassword } = values;
 
     if (newPassword !== confirmPassword) {
-      toast.error('Password and confirm password does not match');
+      toast.error('Password and confirm password do not match');
       return;
     }
 
@@ -40,53 +32,96 @@ const ChangePasswordPage = () => {
 
       if (res.success) {
         toast.success('Password changed successfully', { id: toastId });
-        setOldPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
+        form.resetFields();
         navigate('/profile');
       }
     } catch (error: any) {
-      toast.error(error.data.message, { id: error.data.statusCode });
+      const toastId = toast.loading('Changing password...');
+      toast.error(error.data?.message || 'Failed to change password', { id: toastId });
     }
   };
 
   return (
-    <Flex justify='center' align='center' style={{ height: 'calc(100vh - 10rem)' }}>
+    <Flex 
+      justify='center' 
+      align='center' 
+      style={{ 
+        minHeight: 'calc(100vh - 4rem)',
+        padding: '1rem',
+        background: '#f0f2f5'
+      }}
+    >
       <Flex
         vertical
-        gap={6}
+        gap={16}
         style={{
+          width: '100%',
           maxWidth: '500px',
-          minWidth: '350px',
-          border: '1px solid gray',
+          background: '#fff',
           padding: '2rem',
-          borderRadius: '.4rem',
+          borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}
       >
-        <Input.Password
-          size='large'
-          placeholder='Old Password'
-          value={oldPassword}
-          onChange={(e) => setOldPassword(e.target.value)}
-        />
-        <Input.Password
-          size='large'
-          placeholder='New Password'
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-        />
-        <Input.Password
-          size='large'
-          placeholder='Confirm Password'
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
-        <Button type='primary' onClick={handleSubmit} disabled={true}>
-          Change Password
-        </Button>
-        <Button type='default' onClick={() => navigate('/profile')}>
-          <ArrowLeftOutlined /> Go Back
-        </Button>
+        <Title level={3} style={{ margin: 0, textAlign: 'center' }}>Change Password</Title>
+        
+        <Form
+          form={form}
+          onFinish={handleSubmit}
+          layout="vertical"
+          requiredMark={false}
+          size="large"
+        >
+          <Form.Item
+            name="oldPassword"
+            label="Current Password"
+            rules={[
+              { required: true, message: 'Please enter your current password' },
+              { min: 6, message: 'Password must be at least 6 characters' }
+            ]}
+          >
+            <Input.Password placeholder="Enter current password" />
+          </Form.Item>
+
+          <Form.Item
+            name="newPassword"
+            label="New Password"
+            rules={[
+              { required: true, message: 'Please enter new password' },
+              { min: 6, message: 'Password must be at least 6 characters' }
+            ]}
+          >
+            <Input.Password placeholder="Enter new password" />
+          </Form.Item>
+
+          <Form.Item
+            name="confirmPassword"
+            label="Confirm New Password"
+            rules={[
+              { required: true, message: 'Please confirm your new password' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('newPassword') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('Passwords do not match'));
+                },
+              }),
+            ]}
+          >
+            <Input.Password placeholder="Confirm new password" />
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Change Password
+            </Button>
+          </Form.Item>
+
+          <Button type="default" onClick={() => navigate('/profile')} block>
+            <ArrowLeftOutlined /> Go Back
+          </Button>
+        </Form>
       </Flex>
     </Flex>
   );

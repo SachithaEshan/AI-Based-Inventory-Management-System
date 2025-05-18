@@ -1,11 +1,12 @@
 import { DeleteFilled, EditFilled } from '@ant-design/icons';
 import type { PaginationProps, TableColumnsType } from 'antd';
-import { Button, Flex, Modal, Pagination, Table } from 'antd';
+import { Button, Flex, Modal, Pagination, Table, Form, Input } from 'antd';
 import { useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import {
   useDeleteSellerMutation,
   useGetAllSellerQuery,
+  useUpdateSellerMutation,
 } from '../../redux/features/management/sellerApi';
 import { IProduct, ISeller } from '../../types/product.types';
 import toastMessage from '../../lib/toastMessage';
@@ -18,7 +19,7 @@ const SellerManagementPage = () => {
     search: '',
   });
 
-  const { data, isFetching } = useGetAllSellerQuery(query);
+  const { data, isFetching, refetch } = useGetAllSellerQuery(query);
 
   const onChange: PaginationProps['onChange'] = (page) => {
     setQuery((prev) => ({ ...prev, page: page }));
@@ -56,8 +57,8 @@ const SellerManagementPage = () => {
       render: (item) => {
         return (
           <div style={{ display: 'flex' }}>
-            <UpdateModal product={item} />
-            <DeleteModal id={item.key} />
+            <UpdateModal product={item} onSuccess={refetch} />
+            <DeleteModal id={item.key} onSuccess={refetch} />
           </div>
         );
       },
@@ -92,38 +93,133 @@ const SellerManagementPage = () => {
 /**
  * Update Modal
  */
-const UpdateModal = ({ product }: { product: IProduct }) => {
+const UpdateModal = ({ product, onSuccess }: { product: ISeller; onSuccess: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { handleSubmit } = useForm();
-
-  const onSubmit = (data: FieldValues) => {
-    console.log({ data, product });
-  };
+  const { handleSubmit, register, formState: { errors }, reset } = useForm({
+    defaultValues: {
+      name: product.name,
+      email: product.email,
+      contactNo: product.contactNo,
+    }
+  });
+  const [updateSeller] = useUpdateSellerMutation();
 
   const showModal = () => {
+    reset({
+      name: product.name,
+      email: product.email,
+      contactNo: product.contactNo,
+    });
     setIsModalOpen(true);
+  };
+
+  const onSubmit = async (data: FieldValues) => {
+    try {
+      console.log('Starting seller update with data:', { id: product._id, data });
+      const res = await updateSeller({ 
+        id: product._id, 
+        payload: {
+          name: data.name,
+          email: data.email,
+          contactNo: data.contactNo
+        }
+      }).unwrap();
+      
+      console.log('Update response:', res);
+      
+      if (res.status === 'success') {
+        toastMessage({ icon: 'success', text: res.message || 'Seller updated successfully' });
+        onSuccess(); // Use the passed refetch function
+        handleCancel();
+      } else {
+        throw new Error(res.message || 'Failed to update seller');
+      }
+    } catch (error: any) {
+      console.error('Update error:', error);
+      toastMessage({ 
+        icon: 'error', 
+        text: error.data?.message || error.message || 'Failed to update seller' 
+      });
+    }
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    reset();
   };
 
-  // ! Remove this early return to work with this component
-  return;
   return (
     <>
       <Button
         onClick={showModal}
         type='primary'
         className='table-btn-small'
-        style={{ backgroundColor: 'green' }}
+        style={{ backgroundColor: 'green', marginRight: '8px' }}
       >
         <EditFilled />
       </Button>
-      <Modal title='Update Product Info' open={isModalOpen} onCancel={handleCancel} footer={null}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <h1>Working on it...!!!</h1>
-          <Button htmlType='submit'>Submit</Button>
+      <Modal 
+        title='Update Seller Info' 
+        open={isModalOpen} 
+        onCancel={handleCancel} 
+        footer={null}
+        destroyOnClose={true}
+      >
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit(onSubmit)(e);
+        }}>
+          <Form layout="vertical">
+            <Form.Item label="Name" required>
+              <Input
+                {...register('name', { required: 'Name is required' })}
+                placeholder="Enter seller name"
+                defaultValue={product.name}
+              />
+              {errors.name && <span style={{ color: 'red' }}>{errors.name.message}</span>}
+            </Form.Item>
+
+            <Form.Item label="Email" required>
+              <Input
+                {...register('email', { 
+                  required: 'Email is required',
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: 'Invalid email address'
+                  }
+                })}
+                placeholder="Enter email address"
+                defaultValue={product.email}
+              />
+              {errors.email && <span style={{ color: 'red' }}>{errors.email.message}</span>}
+            </Form.Item>
+
+            <Form.Item label="Contact Number" required>
+              <Input
+                {...register('contactNo', { 
+                  required: 'Contact number is required',
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: 'Please enter a valid 10-digit phone number'
+                  }
+                })}
+                placeholder="Enter contact number"
+                defaultValue={product.contactNo}
+              />
+              {errors.contactNo && <span style={{ color: 'red' }}>{errors.contactNo.message}</span>}
+            </Form.Item>
+
+            <Form.Item>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <Button onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button type="primary" htmlType="submit" style={{ backgroundColor: 'green' }}>
+                  Update
+                </Button>
+              </div>
+            </Form.Item>
+          </Form>
         </form>
       </Modal>
     </>
@@ -133,7 +229,7 @@ const UpdateModal = ({ product }: { product: IProduct }) => {
 /**
  * Delete Modal
  */
-const DeleteModal = ({ id }: { id: string }) => {
+const DeleteModal = ({ id, onSuccess }: { id: string; onSuccess: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteSeller] = useDeleteSellerMutation();
 
@@ -142,6 +238,7 @@ const DeleteModal = ({ id }: { id: string }) => {
       const res = await deleteSeller(id).unwrap();
       if (res.statusCode === 200) {
         toastMessage({ icon: 'success', text: res.message });
+        onSuccess(); // Trigger refetch
         handleCancel();
       }
     } catch (error: any) {

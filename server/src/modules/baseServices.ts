@@ -27,8 +27,14 @@ class BaseServices<T> {
   /**
    * Update
    */
-  async update(id: string, payload: any) {
+  async update(id: string, payload: any, userId?: string) {
     await this._isExists(id);
+    if (userId) {
+      const exists = await this.model.findOne({ _id: id, user: userId });
+      if (!exists) {
+        throw new CustomError(httpStatus.FORBIDDEN, 'You are not authorized to update this record', 'Unauthorized');
+      }
+    }
     return this.model.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
   }
 
@@ -42,7 +48,7 @@ class BaseServices<T> {
 
   protected async _isExists(id: string) {
     if (!(await this.model.findById(id))) {
-      throw new CustomError(httpStatus.NOT_FOUND, this.modelName + ' is not found!');
+      throw new CustomError(httpStatus.NOT_FOUND, this.modelName + ' is not found!', 'Record not found');
     }
   }
 }

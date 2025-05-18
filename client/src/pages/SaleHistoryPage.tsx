@@ -2,16 +2,15 @@ import { Col, Row, Button } from 'antd';
 import HistoryTable from '../components/tables/HistoryTable';
 import {
   useDailySaleQuery,
-  useMonthlySaleQuery,
   useWeeklySaleQuery,
-  useYearlySaleQuery,
 } from '../redux/features/management/saleApi';
 import { useState } from 'react';
+import YearlyChart from '../components/Charts/YearlyChart';
+import MonthlyChart from '../components/Charts/MonthlyChart';
+import TopProductsChart from '../components/Charts/TopProductsChart';
 
 const SaleHistoryPage = () => {
   const [showAllDaily, setShowAllDaily] = useState(false);
-  const { data: yearlyData, isFetching: isYearlyDataFetching } = useYearlySaleQuery(undefined);
-  const { data: monthlyData, isFetching: isMonthlyDataFetching } = useMonthlySaleQuery(undefined);
   const { data: dailySale, isFetching: isDailySaleFetching } = useDailySaleQuery(undefined);
   const { data: weeklySale, isFetching: isWeeklySaleFetching } = useWeeklySaleQuery(undefined);
 
@@ -30,13 +29,13 @@ const SaleHistoryPage = () => {
       <Col xs={{ span: 24 }} lg={{ span: 12 }} style={{ padding: '.2rem' }}>
         <div className='sales'>
           <h1 style={{ fontSize: '2rem', textAlign: 'center' }}>Yearly Sale</h1>
-          <HistoryTable data={yearlyData} isFetching={isYearlyDataFetching} />
+          <YearlyChart />
         </div>
       </Col>
       <Col xs={{ span: 24 }} lg={{ span: 12 }} style={{ padding: '.2rem' }}>
         <div className='sales'>
           <h1 style={{ fontSize: '2rem', textAlign: 'center' }}>Monthly Sale</h1>
-          <HistoryTable data={monthlyData} isFetching={isMonthlyDataFetching} />
+          <MonthlyChart />
         </div>
       </Col>
       <Col xs={{ span: 24 }} lg={{ span: 12 }} style={{ padding: '.2rem' }}>
@@ -62,6 +61,12 @@ const SaleHistoryPage = () => {
               </Button>
             </div>
           )}
+        </div>
+      </Col>
+      <Col xs={{ span: 24 }} style={{ padding: '.2rem' }}>
+        <div className='sales'>
+          <h1 style={{ fontSize: '2rem', textAlign: 'center' }}>Top Selling Products</h1>
+          <TopProductsChart />
         </div>
       </Col>
     </Row>

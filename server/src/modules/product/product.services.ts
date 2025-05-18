@@ -114,20 +114,30 @@ class ProductServices extends BaseServices<any> {
    * Get All product of user
    */
   async readAll(query: Record<string, unknown> = {}, userId: string) {
-    let data = await this.model.aggregate([...matchStagePipeline(query, userId), ...sortAndPaginatePipeline(query)]);
+    const matchPipeline = matchStagePipeline(query, userId);
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-    const totalCount = await this.model.aggregate([
-      ...matchStagePipeline(query, userId),
+    let data = await this.model.aggregate([
+      ...matchPipeline,
       {
-        $group: {
-          _id: null,
-          total: { $sum: 1 }
+        $sort: {
+          createdAt: -1
         }
       },
       {
-        $project: {
-          _id: 0
-        }
+        $skip: skip
+      },
+      {
+        $limit: limit
+      }
+    ]);
+
+    const totalCount = await this.model.aggregate([
+      ...matchPipeline,
+      {
+        $count: 'total'
       }
     ]);
 
@@ -135,7 +145,7 @@ class ProductServices extends BaseServices<any> {
     data = await this.model.populate(data, { path: 'brand', select: '-__v -user' });
     data = await this.model.populate(data, { path: 'seller', select: '-__v -user -createdAt -updatedAt' });
 
-    return { data, totalCount };
+    return { data, totalCount: totalCount[0] || { total: 0 } };
   }
 
   /**

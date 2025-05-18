@@ -12,6 +12,7 @@ import ProductManagePage from '../pages/managements/ProductManagePage';
 import PurchaseManagementPage from '../pages/managements/PurchaseManagementPage';
 import SaleManagementPage from '../pages/managements/SaleManagementPage';
 import SellerManagementPage from '../pages/managements/SellerManagementPage';
+import UserManagementPage from '../pages/managements/UserManagementPage';
 import ChangePasswordPage from '../pages/ChangePasswordPage';
 import EditProfilePage from '../pages/EditProfilePage';
 import ForecastPage from '../pages/ForecastPage';
@@ -70,6 +71,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectRoute>
             <SellerManagementPage />
+          </ProtectRoute>
+        ),
+      },
+      {
+        path: 'users',
+        element: (
+          <ProtectRoute>
+            <UserManagementPage />
           </ProtectRoute>
         ),
       },
