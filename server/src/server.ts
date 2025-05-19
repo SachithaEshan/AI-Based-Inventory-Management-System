@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import { createServer } from 'http';
 import mongoose from 'mongoose';
 import app from './app';
@@ -17,10 +16,6 @@ const io = initializeSocket(server);
 // Create and set NotificationService instance
 const notificationService = new NotificationService(io);
 setNotificationService(notificationService);
-
-// Middleware
-app.use(cors());
-app.use(express.json());
 
 async function main() {
   try {

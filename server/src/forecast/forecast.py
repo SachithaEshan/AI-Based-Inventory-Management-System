@@ -137,7 +137,7 @@ def forecast(product_id=None, is_demo=False):
         model.fit(product_df)
         
         # Make future dataframe (e.g., 30 days)
-        future = model.make_future_dataframe(periods=722)
+        future = model.make_future_dataframe(periods=60)
         forecast = model.predict(future)
         
         # Select only important columns

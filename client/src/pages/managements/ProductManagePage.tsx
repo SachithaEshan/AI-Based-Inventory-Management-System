@@ -1,4 +1,4 @@
-import { DeleteFilled, EditFilled } from '@ant-design/icons';
+import { DeleteFilled, EditFilled, LineChartOutlined } from '@ant-design/icons';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Col, Flex, Modal, Pagination, Row, Table, Tag, Tooltip } from 'antd';
 import { useState } from 'react';
@@ -19,6 +19,7 @@ import { useGetAllBrandsQuery } from '../../redux/features/management/brandApi';
 import { useCreateSaleMutation } from '../../redux/features/management/saleApi';
 import { WarningOutlined } from '@ant-design/icons';
 import LowStockWarning from '../../components/LowStockWarning';
+import { useNavigate } from 'react-router-dom';
 
 const ProductManagePage = () => {
   const [query, setQuery] = useState({
@@ -59,6 +60,8 @@ const ProductManagePage = () => {
     size: product.size,
     description: product.description,
   }));
+
+  const navigate = useNavigate();
 
   const columns: TableColumnsType<any> = [
     {
@@ -119,6 +122,14 @@ const ProductManagePage = () => {
       render: (item) => {
         return (
           <div style={{ display: 'flex' }}>
+            <Button
+              onClick={() => navigate(`/stock-optimization/${item.key}`)}
+              type='primary'
+              className='table-btn-small'
+              style={{ backgroundColor: 'purple', display: 'flex', gap: '8px', justifyContent: 'center' }}
+            >
+              <LineChartOutlined />
+            </Button>
             <SellProductModal product={item} />
             <AddStockModal product={item} />
             <UpdateProductModal product={item} />
