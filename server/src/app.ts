@@ -7,6 +7,12 @@ import globalErrorHandler from './middlewares/globalErrorhandler';
 
 const app: Application = express();
 
+// Request logging middleware
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
+
 app.use(express.json());
 app.use(morgan('dev'));
 
@@ -14,15 +20,24 @@ app.use(morgan('dev'));
 app.use(cors({
   origin: ['http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    maxAge: 86400 // 24 hours
 }));
 
 // application routes
 app.use('/api/v1', rootRouter);
 
-app.use(globalErrorHandler);
+// Error logging middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('Error:', err);
+    next(err);
+});
 
+app.use(globalErrorHandler);
 app.use(notFound);
 
 export default app;

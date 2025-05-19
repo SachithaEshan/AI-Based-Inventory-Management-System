@@ -50,6 +50,7 @@ class ARIMAAnomalyDetector:
                         
         return best_params, best_model
         
+        #Trains the ARIMA model using the best parameters.
     def fit_model(self, sales_data):
         """
         Fit ARIMA model to the data
@@ -67,10 +68,10 @@ class ARIMAAnomalyDetector:
         self.model = ARIMA(time_series, order=(p, d, q))
         
         # Calculate residuals
-        self.residuals = self.model_fit.resid
+        self.residuals = self.model_fit.resid  #The residuals (actual - predicted)
         
         # Calculate threshold (1.5 standard deviations for more sensitivity)
-        self.threshold = 1.5 * np.std(self.residuals)
+        self.threshold = 1.5 * np.std(self.residuals)   #A threshold: 1.5 × std. deviation of residuals — this is used to detect anomalies.
         
         return {
             'parameters': {'p': p, 'd': d, 'q': q},
